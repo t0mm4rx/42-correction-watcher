@@ -13,12 +13,12 @@ WAIT_TIME = 30
 
 def notify(title, message):
     """Send a desktop notification."""
-    pync.notify(message, title=title, contentImage="./logo.png")
+    pync.notify(message, title=title, contentImage="./logo.png", sound="default")
 
 def get_slots():
     """Send a request to 42 intra."""
     today = datetime.date.today()
-    start = today - datetime.timedelta(days=1)
+    start = today
     end = today + datetime.timedelta(days=days_to_watch)
     print(f"Getting slots from {today} to {end}")
     request = requests.get(
