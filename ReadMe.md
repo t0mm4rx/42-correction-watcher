@@ -1,5 +1,7 @@
 # 42 correction watcher
 
+A Python script that will send you a desktop notification when a correction slot is found.
+
 ## Usage
 
 Only tested on macOS.
