@@ -18,6 +18,7 @@ def notify(title, message):
 def get_slots():
     """Send a request to 42 intra."""
     today = datetime.date.today()
+    start = today - datetime.timedelta(days=1)
     end = today + datetime.timedelta(days=days_to_watch)
     print(f"Getting slots from {today} to {end}")
     request = requests.get(
