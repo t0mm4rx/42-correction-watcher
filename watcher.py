@@ -84,7 +84,6 @@ try:
 except:
     days_to_watch = 3
 
-print(f"Save {project_url} {team_id} {token}")
 save_params(project_url, team_id, token)
 
 notify("Running", "You'll be notified when an open slot is found.")
