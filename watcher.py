@@ -7,9 +7,24 @@ import pync
 import time
 import requests
 import datetime
+import pickle
 
 # Time waited between every check, in seconds
-WAIT_TIME = 30
+WAIT_TIME = 15
+
+def get_params():
+    """Get the last params saved on the disk. Return None if no params saved."""
+    try:
+        with open("./params.pkl", "rb") as file:
+            url, team_id, token = pickle.load(file)
+            return (url, team_id, token)
+    except:
+        return (None, None, None)
+
+def save_params(url, team_id, token):
+    """Save params on the disk."""
+    with open("./params.pkl", "wb+") as file:
+        pickle.dump((url, team_id, token), file)
 
 def notify(title, message):
     """Send a desktop notification."""
@@ -36,16 +51,41 @@ def get_slots():
     return response
 
 
+# Check if we previously saved params
+previous_url, previous_team_id, previous_token = get_params()
+
+url_placeholder = ""
+team_id_placeholder = ""
+token_placeholder = ""
+if (not previous_url is None):
+    url_placeholder = f" (default {previous_url})"
+if (not previous_team_id is None):
+    team_id_placeholder = f" (default {previous_team_id})"
+if (not previous_token is None):
+    token_placeholder = f" (default {previous_token})"
+
 # Get variables
 print("Refer to ReadMe.md to help you find the following data.")
-project_url = input("Project URL: ")
-team_id = input("Team ID: ")
-token = input("Session token: ")
+
+project_url = input(f"Project URL{url_placeholder}: ")
+if (project_url == ""):
+    project_url = previous_url
+
+team_id = input(f"Team ID{team_id_placeholder}: ")
+if (team_id == ""):
+    team_id = previous_team_id
+
+token = input(f"Session token{token_placeholder}: ")
+if (token == ""):
+    token = previous_token
 
 try:
     days_to_watch = int(input("Number of days you want to watch (default 3): "))
 except:
     days_to_watch = 3
+
+print(f"Save {project_url} {team_id} {token}")
+save_params(project_url, team_id, token)
 
 notify("Running", "You'll be notified when an open slot is found.")
 
