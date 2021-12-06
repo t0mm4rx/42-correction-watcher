@@ -2,8 +2,11 @@
 
 if (__name__ != "__main__"):
     exit(1)
-
-import pync
+from sys import platform
+if platform == 'win32':
+    from win10toast import ToastNotifier
+elif platform == 'darwin':
+    import pync
 import time
 import requests
 import datetime
@@ -28,7 +31,12 @@ def save_params(url, team_id, token):
 
 def notify(title, message):
     """Send a desktop notification."""
-    pync.notify(message, title=title, contentImage="./logo.png", sound="default")
+    if platform == 'darwin':
+        pync.notify(message, title=title, contentImage="./logo.png", sound="default")
+    elif platform == 'win32':
+        toast = ToastNotifier()
+        toast.show_toast(title, message, duration=0)
+
 
 def get_slots():
     """Send a request to 42 intra."""
