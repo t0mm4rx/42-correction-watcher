@@ -7,6 +7,8 @@ if platform == 'win32':
     from win10toast import ToastNotifier
 elif platform == 'darwin':
     import pync
+elif platform == "linux":
+    import notify2
 import time
 import requests
 import datetime
@@ -36,7 +38,10 @@ def notify(title, message):
     elif platform == 'win32':
         toast = ToastNotifier()
         toast.show_toast(title, message, duration=0)
-
+    elif platform == "linux":
+        notify2.init("42 School Correction")
+        n = notify2.Notification(title, message)
+        n.show()
 
 def get_slots():
     """Send a request to 42 intra."""
