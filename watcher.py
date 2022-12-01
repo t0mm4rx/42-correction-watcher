@@ -21,15 +21,15 @@ def get_params():
     """Get the last params saved on the disk. Return None if no params saved."""
     try:
         with open("./params.pkl", "rb") as file:
-            url, team_id, token = pickle.load(file)
-            return (url, team_id, token)
+            url, team_id, token, api = pickle.load(file)
+            return (url, team_id, token, api)
     except:
-        return (None, None, None)
+        return (None, None, None, None)
 
-def save_params(url, team_id, token):
+def save_params(url, team_id, token, api):
     """Save params on the disk."""
     with open("./params.pkl", "wb+") as file:
-        pickle.dump((url, team_id, token), file)
+        pickle.dump((url, team_id, token, api), file)
 
 def notify(title, message):
     """Send a desktop notification."""
@@ -63,19 +63,28 @@ def get_slots():
         exit(0)
     return response
 
+# Do the callback if specified
+def call_api(message):
+    try:
+        requests.get(api.format(message))
+    except Exception as e:
+        print(e)
 
 # Check if we previously saved params
-previous_url, previous_team_id, previous_token = get_params()
+previous_url, previous_team_id, previous_token, previous_api = get_params()
 
 url_placeholder = ""
 team_id_placeholder = ""
 token_placeholder = ""
+api_placeholder = ""
 if (not previous_url is None):
     url_placeholder = f" (default {previous_url})"
 if (not previous_team_id is None):
     team_id_placeholder = f" (default {previous_team_id})"
 if (not previous_token is None):
     token_placeholder = f" (default {previous_token})"
+if (not previous_api is None):
+    api_placeholder = f" (default {previous_api})"
 
 # Get variables
 print("Refer to ReadMe.md to help you find the following data.")
@@ -92,12 +101,16 @@ token = input(f"Session token{token_placeholder}: ")
 if (token == ""):
     token = previous_token
 
+api = input(f"API callback (optional){api_placeholder}: ")
+if (api == ""):
+    api = previous_api
+
 try:
     days_to_watch = int(input("Number of days you want to watch (default 3): "))
 except:
     days_to_watch = 3
 
-save_params(project_url, team_id, token)
+save_params(project_url, team_id, token, api)
 
 notify("Running", "You'll be notified when an open slot is found.")
 
@@ -107,4 +120,6 @@ while True:
     if (len(slots) > 0):
         print("Slot found.")
         notify("Correction found!", "An open slot has been found.")
+        if api:
+            call_api("42: Correction Found")
     time.sleep(WAIT_TIME)
